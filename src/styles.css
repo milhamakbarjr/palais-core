@@ -1,17 +1,117 @@
-
 @import "tailwindcss";
 
-* {
-  box-sizing: border-box;
+/* ============================================================
+   Pa'lais — brand fonts (served from public/fonts/)
+============================================================ */
+@font-face {
+	font-family: "Sandman Fill";
+	src: url("/fonts/Sandman_Fill-210122.ttf") format("truetype");
+	font-weight: 400;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Delivery Note";
+	src: url("/fonts/DeliveryNoteDEMO-Regular.ttf") format("truetype");
+	font-weight: 400;
+	font-display: swap;
+}
+@font-face {
+	font-family: "ITC Avant Garde";
+	src: url("/fonts/ITCAvantGardeStd-Bk.ttf") format("truetype");
+	font-weight: 400;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Sonder Sans";
+	src: url("/fonts/SonderSans-BlackRough.ttf") format("truetype");
+	font-weight: 900;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Sonder Sans";
+	src: url("/fonts/SonderSans-BoldRough.ttf") format("truetype");
+	font-weight: 700;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Sonder Sans";
+	src: url("/fonts/SonderSans-Rough.ttf") format("truetype");
+	font-weight: 400;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Axiforma";
+	src: url("/fonts/Axiforma-Regular.ttf") format("truetype");
+	font-weight: 400;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Axiforma";
+	src: url("/fonts/Axiforma-ExtraBold.ttf") format("truetype");
+	font-weight: 800;
+	font-display: swap;
 }
 
+/* ============================================================
+   Tailwind v4 theme tokens
+============================================================ */
+@theme {
+	--color-cobalt: #234386;
+	--color-orange: #f08d52;
+	--color-orange-brand: #ed7328;
+	--color-cream: #fbf9f6;
+	--color-mint-light: #c7deb1;
+	--color-mint-wave: #a2d3a6;
+	--color-green-banner: #67b988;
+	--color-yellow-banner: #fec601;
+	--color-pink-wave: #f5c8d2;
+	--color-blue-panel: #6fabdf;
+	--color-blue-panel-2: #79afdd;
+	--color-coral: #f09a9f;
+
+	--font-display: "Sandman Fill", "Bungee Shade", serif;
+	--font-wood: "Bungee Shade", "Sandman Fill", Impact, sans-serif;
+	--font-hand: "Delivery Note", "Caveat", cursive;
+	--font-body: "ITC Avant Garde", "Avenir", system-ui, sans-serif;
+	--font-ui: "Sonder Sans", "Trebuchet MS", sans-serif;
+}
+
+/* ============================================================
+   Reset + base
+============================================================ */
+* {
+	box-sizing: border-box;
+}
 html,
 body,
 #app {
-  min-height: 100%;
+	min-height: 100%;
 }
-
 body {
-  margin: 0;
+	margin: 0;
+	font-family: var(--font-body);
+	color: var(--color-cobalt);
+	background: #ffffff;
+	overflow-x: hidden;
+}
+img,
+svg {
+	display: block;
+	max-width: 100%;
+}
+a {
+	color: inherit;
+	text-decoration: none;
+}
+button {
+	font-family: inherit;
+	cursor: pointer;
+	border: 0;
+	background: none;
+	padding: 0;
 }
 
+/* Carousel track — hide WebKit scrollbar while keeping scroll functional */
+.recipe-track::-webkit-scrollbar {
+	display: none;
+}
