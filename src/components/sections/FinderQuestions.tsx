@@ -23,13 +23,13 @@ export default function FinderQuestions() {
 				{/* Top-left botanical leaves */}
 				<GrowingSprig
 					src="/assets/HomePage/Plant01.svg"
-					className="absolute -top-10 -left-6 w-[140px] select-none pointer-events-none [&_svg]:h-auto [&_svg]:w-full"
+					className="absolute -top-10 -left-6 w-[140px] select-none pointer-events-none"
 				/>
 
 				{/* Top-center small cashew nut */}
 				<GrowingSprig
 					src="/assets/IntroSection/nut-1.svg"
-					className="absolute top-4 left-1/2 -translate-x-1/2 w-[58px] rotate-12 select-none pointer-events-none [&_svg]:h-auto [&_svg]:w-full"
+					className="absolute top-4 left-1/2 -translate-x-1/2 w-[58px] rotate-12 select-none pointer-events-none"
 					stagger={0.05}
 				/>
 
@@ -151,7 +151,7 @@ export default function FinderQuestions() {
 				{/* Bottom-right cobalt fennel sprig */}
 				<GrowingSprig
 					src="/assets/Community/community-deco2.svg"
-					className="absolute -bottom-10 -right-12 w-[180px] rotate-12 select-none pointer-events-none z-20 [&_svg]:h-auto [&_svg]:w-full"
+					className="absolute -bottom-10 -right-12 w-[180px] rotate-12 select-none pointer-events-none z-20"
 				/>
 			</div>
 		</section>

@@ -10,7 +10,7 @@ export default function Intro() {
 			{/* Top floating cobalt nut */}
 			<GrowingSprig
 				src="/assets/IntroSection/nut-1.svg"
-				className="absolute top-12 left-1/2 -translate-x-[260px] w-10 opacity-90 [&_svg]:h-auto [&_svg]:w-full"
+				className="absolute top-12 left-1/2 -translate-x-[260px] w-10 opacity-90"
 				stagger={0.05}
 			/>
 
@@ -41,7 +41,7 @@ export default function Intro() {
 				/>
 				<GrowingSprig
 					src="/assets/HomePage/Plant02.svg"
-					className="absolute left-4 top-8 w-[380px] [&_svg]:h-auto [&_svg]:w-full"
+					className="absolute left-4 top-8 w-[380px]"
 				/>
 			</div>
 

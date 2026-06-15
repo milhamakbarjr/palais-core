@@ -1,10 +1,16 @@
 import { useGSAP } from "@gsap/react";
-import { type CSSProperties, useRef } from "react";
+import { type CSSProperties, useRef, useState } from "react";
 
-import { ensureGsap, gsap, ScrollTrigger } from "#/lib/motion/gsap";
+import { ensureGsap, gsap } from "#/lib/motion/gsap";
 import { useReducedMotion } from "#/lib/motion/useReducedMotion";
 
 import { InlineSvg } from "./InlineSvg";
+
+// Inline SVGs need the inner <svg> to fill the wrapper, since InlineSvg renders
+// the markup unchanged from the source file (which usually carries its own
+// fixed width/height attrs). Apply at the wrapper level so every call site gets
+// it for free.
+const DEFAULT_SVG_FIT = "[&_svg]:h-auto [&_svg]:w-full";
 
 type Props = {
 	src: string;
@@ -31,10 +37,15 @@ export function GrowingSprig({
 }: Props) {
 	const ref = useRef<HTMLDivElement>(null);
 	const reduced = useReducedMotion();
+	// Tracks whether the async InlineSvg fetch has injected markup. useGSAP can
+	// only safely query <path> elements once this flips to true — otherwise the
+	// effect runs on mount with zero paths in the DOM and the tween silently
+	// no-ops (this was the race fix from review).
+	const [ready, setReady] = useState(false);
 
 	useGSAP(
 		() => {
-			if (reduced) return;
+			if (reduced || !ready) return;
 			ensureGsap();
 			const el = ref.current;
 			if (!el) return;
@@ -71,24 +82,24 @@ export function GrowingSprig({
 		},
 		{
 			scope: ref,
-			dependencies: [src, reduced, stagger, duration, start, from],
+			dependencies: [ready, reduced, src, stagger, duration, start, from],
 		},
 	);
 
-	// SSR/reduced-motion fallback: render full opacity immediately.
-	const fallbackKey = reduced ? "reduced" : "anim";
+	const mergedClassName = className
+		? `${DEFAULT_SVG_FIT} ${className}`
+		: DEFAULT_SVG_FIT;
 
 	return (
 		<InlineSvg
-			key={fallbackKey}
+			// Remount cleanly when reduced-motion preference flips so any stale
+			// gsap.set transforms on inner paths are dropped with the old element.
+			key={reduced ? "reduced" : "anim"}
 			src={src}
 			containerRef={ref}
-			className={className}
+			className={mergedClassName}
 			style={style}
-			onReady={() => {
-				// Ensure ScrollTrigger sees correct positions after async SVG injection.
-				if (!reduced) ScrollTrigger.refresh();
-			}}
+			onReady={() => setReady(true)}
 		/>
 	);
 }

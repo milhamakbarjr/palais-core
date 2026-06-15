@@ -110,18 +110,29 @@ function ArrowButton({
 	direction,
 	onClick,
 	disabled,
+	position,
 }: {
 	direction: "prev" | "next";
 	onClick: () => void;
 	disabled: boolean;
+	position: { current: number; total: number };
 }) {
+	const action = direction === "prev" ? "Previous" : "Next";
+	const label = `${action} recipe (${position.current} of ${position.total})`;
+	// Use aria-disabled instead of the native `disabled` attribute so the
+	// button stays focusable and screen readers announce its boundary state,
+	// while still blocking the click handler at the JS level.
+	const handleClick = () => {
+		if (disabled) return;
+		onClick();
+	};
 	return (
 		<button
 			type="button"
-			onClick={onClick}
-			disabled={disabled}
-			aria-label={direction === "prev" ? "Previous recipe" : "Next recipe"}
-			className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-cobalt shadow-lg transition-opacity duration-150 ease-out hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-30"
+			onClick={handleClick}
+			aria-disabled={disabled}
+			aria-label={label}
+			className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-cobalt shadow-lg transition-opacity duration-150 ease-out hover:opacity-90 aria-disabled:cursor-not-allowed aria-disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt"
 		>
 			<svg
 				viewBox="0 0 24 24"
@@ -145,6 +156,7 @@ export default function RecipeSlider() {
 	const trackRef = useRef<HTMLDivElement>(null);
 	const [atStart, setAtStart] = useState(true);
 	const [atEnd, setAtEnd] = useState(false);
+	const [currentIndex, setCurrentIndex] = useState(0);
 
 	useEffect(() => {
 		const el = trackRef.current;
@@ -153,6 +165,8 @@ export default function RecipeSlider() {
 			const maxScroll = el.scrollWidth - el.clientWidth;
 			setAtStart(el.scrollLeft <= 1);
 			setAtEnd(el.scrollLeft >= maxScroll - 1);
+			// Round-nearest gives the card whose snap-point the track is on.
+			setCurrentIndex(Math.round(el.scrollLeft / CARD_STEP));
 		};
 		update();
 		el.addEventListener("scroll", update, { passive: true });
@@ -195,15 +209,30 @@ export default function RecipeSlider() {
 					<div className="relative z-10 flex h-full w-[42%] flex-col items-start justify-center gap-5">
 						<div
 							ref={trackRef}
-							className="recipe-track flex w-full items-center gap-6 overflow-x-auto overflow-y-hidden snap-x snap-mandatory py-4"
+							role="region"
+							aria-label="Recipe carousel"
+							aria-roledescription="carousel"
+							tabIndex={0}
+							className="recipe-track flex w-full items-center gap-6 overflow-x-auto overflow-y-hidden snap-x snap-mandatory py-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt"
 							style={{ scrollbarWidth: "none" }}
 						>
-							{recipes.map((r) => (
-								<div key={r.title} className="snap-start shrink-0">
+							{recipes.map((r, i) => (
+								<div
+									key={r.title}
+									role="group"
+									aria-roledescription="slide"
+									aria-label={`${i + 1} of ${recipes.length}: ${r.title}`}
+									className="snap-start shrink-0"
+								>
 									<RecipeCard recipe={r} />
 								</div>
 							))}
 						</div>
+
+						{/* Live region — announces position changes to screen readers */}
+						<span aria-live="polite" aria-atomic="true" className="sr-only">
+							Recipe {currentIndex + 1} of {recipes.length}
+						</span>
 
 						{/* Carousel controls */}
 						<div className="flex items-center gap-3">
@@ -211,15 +240,18 @@ export default function RecipeSlider() {
 								direction="prev"
 								onClick={() => scrollByCard(-1)}
 								disabled={atStart}
+								position={{ current: currentIndex + 1, total: recipes.length }}
 							/>
 							<ArrowButton
 								direction="next"
 								onClick={() => scrollByCard(1)}
 								disabled={atEnd}
+								position={{ current: currentIndex + 1, total: recipes.length }}
 							/>
 							<span
-								className="ml-2 text-cobalt/70 text-sm tracking-wider uppercase"
+								className="ml-2 text-cobalt text-sm tracking-wider uppercase"
 								style={{ fontFamily: "var(--font-ui)" }}
+								aria-hidden="true"
 							>
 								Drag or use arrows
 							</span>

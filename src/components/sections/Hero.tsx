@@ -21,7 +21,7 @@ export default function Hero() {
 				/>
 				<GrowingSprig
 					src="/assets/HomePage/Plant01.svg"
-					className="absolute [&_svg]:h-auto [&_svg]:w-full"
+					className="absolute"
 					style={{
 						left: "80px",
 						top: "200px",
@@ -141,7 +141,7 @@ export default function Hero() {
 			{/* Center-bottom tiny botanical sprig */}
 			<GrowingSprig
 				src="/assets/HomePage/Plant03.svg"
-				className="absolute left-1/2 -translate-x-1/2 pointer-events-none [&_svg]:h-auto [&_svg]:w-full"
+				className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
 				style={{ bottom: "56px", width: "72px" }}
 				stagger={0.06}
 			/>

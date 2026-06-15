@@ -5,7 +5,16 @@ const cache = new Map<string, Promise<string>>();
 function fetchSvg(src: string): Promise<string> {
 	let p = cache.get(src);
 	if (!p) {
-		p = fetch(src).then((r) => r.text());
+		p = fetch(src)
+			.then((r) => {
+				if (!r.ok) throw new Error(`SVG fetch failed: ${r.status} ${src}`);
+				return r.text();
+			})
+			.catch((err) => {
+				// Don't poison the cache with a rejected promise — let the next mount retry.
+				cache.delete(src);
+				throw err;
+			});
 		cache.set(src, p);
 	}
 	return p;
@@ -20,6 +29,7 @@ type Props = {
 	style?: CSSProperties;
 	ariaHidden?: boolean;
 	containerRef?: RefObject<HTMLDivElement | null>;
+	/** Fires once after the SVG markup is injected into the DOM. */
 	onReady?: (root: HTMLDivElement) => void;
 };
 
@@ -43,11 +53,18 @@ export function InlineSvg({
 		};
 	}, [src]);
 
+	// Fire onReady exactly once after markup is committed to the DOM, not on
+	// every re-render or during the ref-callback's render phase.
+	useEffect(() => {
+		if (!markup || !onReady) return;
+		const el = containerRef?.current;
+		if (el) onReady(el);
+	}, [markup, onReady, containerRef]);
+
 	return (
 		<div
 			ref={(el) => {
 				if (containerRef) containerRef.current = el;
-				if (el && markup && onReady) onReady(el);
 			}}
 			aria-hidden={ariaHidden}
 			className={className}
