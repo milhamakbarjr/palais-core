@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Pill } from "../ui/Pill";
 
@@ -146,25 +146,22 @@ export default function RecipeSlider() {
 	const [atStart, setAtStart] = useState(true);
 	const [atEnd, setAtEnd] = useState(false);
 
-	const updateBounds = useCallback(() => {
-		const el = trackRef.current;
-		if (!el) return;
-		const maxScroll = el.scrollWidth - el.clientWidth;
-		setAtStart(el.scrollLeft <= 1);
-		setAtEnd(el.scrollLeft >= maxScroll - 1);
-	}, []);
-
 	useEffect(() => {
 		const el = trackRef.current;
 		if (!el) return;
-		updateBounds();
-		el.addEventListener("scroll", updateBounds, { passive: true });
-		window.addEventListener("resize", updateBounds);
-		return () => {
-			el.removeEventListener("scroll", updateBounds);
-			window.removeEventListener("resize", updateBounds);
+		const update = () => {
+			const maxScroll = el.scrollWidth - el.clientWidth;
+			setAtStart(el.scrollLeft <= 1);
+			setAtEnd(el.scrollLeft >= maxScroll - 1);
 		};
-	}, [updateBounds]);
+		update();
+		el.addEventListener("scroll", update, { passive: true });
+		window.addEventListener("resize", update);
+		return () => {
+			el.removeEventListener("scroll", update);
+			window.removeEventListener("resize", update);
+		};
+	}, []);
 
 	const scrollByCard = (dir: 1 | -1) => {
 		trackRef.current?.scrollBy({ left: dir * CARD_STEP, behavior: "smooth" });
